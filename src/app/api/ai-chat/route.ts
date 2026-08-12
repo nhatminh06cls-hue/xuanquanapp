@@ -1,7 +1,23 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '')
+export const runtime = 'edge'
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY ?? ''
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`
+
+async function callGemini(parts: unknown[]): Promise<string> {
+  const res = await fetch(GEMINI_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts }] }),
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Gemini ${res.status}: ${err.slice(0, 200)}`)
+  }
+  const json = await res.json() as any
+  return json.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+}
 
 // Contextual fallback khi Gemini quota hết — match theo keyword
 const FALLBACK_RULES: Array<{ keywords: string[]; reply: string }> = [
@@ -271,9 +287,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Vui lòng gửi ảnh hoặc tin nhắn' }, { status: 400 })
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
-
-    const parts: any[] = []
+    const parts: unknown[] = []
 
     if (imageFile) {
       const bytes  = await imageFile.arrayBuffer()
@@ -281,17 +295,8 @@ export async function POST(req: NextRequest) {
       parts.push({ inlineData: { data: base64, mimeType: imageFile.type } })
       parts.push({
         text: message ?? `Bạn là chuyên gia tư vấn hoa cho làng hoa Xuân Quan, Văn Giang, Hưng Yên.
-
-Hãy phân tích ảnh không gian/phòng này và gợi ý:
-1. **Phong cách không gian**: Hiện đại/cổ điển/Scandinavian/tối giản...
-2. **Màu sắc chủ đạo** và tone màu phù hợp
-3. **3-5 loại hoa/cây cảnh phù hợp nhất** (có ở làng hoa Xuân Quan):
-   - Tên hoa, màu sắc, lý do phù hợp
-   - Vị trí đặt lý tưởng trong phòng
-   - Kích thước chậu/bó phù hợp
-4. **Lưu ý chăm sóc** đơn giản
-
-Trả lời bằng tiếng Việt, thân thiện, cụ thể và hữu ích. Dùng emoji cho sinh động.`,
+Hãy phân tích ảnh không gian/phòng này và gợi ý 3-5 loại hoa/cây cảnh phù hợp nhất.
+Trả lời bằng tiếng Việt, thân thiện, dùng emoji.`,
       })
     } else {
       parts.push({
@@ -302,9 +307,8 @@ ${message}`,
       })
     }
 
-    const result   = await model.generateContent(parts)
-    const response = result.response.text()
-    return NextResponse.json({ reply: response })
+    const reply = await callGemini(parts)
+    return NextResponse.json({ reply })
 
   } catch (err: any) {
     console.error('[AI Chat Error]', err.message)
