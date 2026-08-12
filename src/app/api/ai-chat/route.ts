@@ -271,7 +271,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Vui lòng gửi ảnh hoặc tin nhắn' }, { status: 400 })
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
     const parts: any[] = []
 
