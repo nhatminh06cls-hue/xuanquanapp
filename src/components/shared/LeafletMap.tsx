@@ -17,12 +17,32 @@ interface LeafletMapProps {
   gardens: Garden[]
 }
 
-// ── Nhà vườn đã xác nhận (cập nhật dần) ──
+// ── Nhà vườn đã xác nhận với tọa độ chính xác từ Google Maps ──
 const KNOWN_GARDENS = [
-  { name: 'Nhà Vườn Bích Trắc',  lat: 20.9676943, lng: 105.916722,  mapsUrl: 'https://maps.app.goo.gl/ntK6P12err4n2noC9' },
-  { name: 'Nhà Vườn Chiến Hoan', lat: 20.9688225, lng: 105.9184685, mapsUrl: 'https://maps.app.goo.gl/2w4Qmj2BknXzRvv2A' },
-  { name: 'Nhà Vườn Dũng Bách',  lat: 20.9695591, lng: 105.9166711, mapsUrl: 'https://maps.app.goo.gl/4pTTiTXx6mNBsKHWA' },
-  { name: 'Nhà Vườn Sản Hòe',    lat: 20.969511,  lng: 105.9176163, mapsUrl: 'https://maps.app.goo.gl/4c8PeeMtC3jFurEM7' },
+  // ── 4 nhà vườn bạn xác nhận trực tiếp ──
+  { name: 'Nhà Vườn Bích Trắc',      lat: 20.9676943, lng: 105.916722,  mapsUrl: 'https://maps.app.goo.gl/ntK6P12err4n2noC9' },
+  { name: 'Nhà Vườn Chiến Hoan',     lat: 20.9688225, lng: 105.9184685, mapsUrl: 'https://maps.app.goo.gl/2w4Qmj2BknXzRvv2A' },
+  { name: 'Nhà Vườn Dũng Bách',      lat: 20.9695591, lng: 105.9166711, mapsUrl: 'https://maps.app.goo.gl/4pTTiTXx6mNBsKHWA' },
+  { name: 'Nhà Vườn Sản Hòe',        lat: 20.969511,  lng: 105.9176163, mapsUrl: 'https://maps.app.goo.gl/4c8PeeMtC3jFurEM7' },
+  // ── 19 nhà vườn từ Google Doc ──
+  { name: 'Vườn Cây Hoàng Kim',      lat: 20.968513,  lng: 105.917944,  mapsUrl: 'https://maps.app.goo.gl/vcKSrozLVPYbRuy39' },
+  { name: 'Nhà Vườn Hà Từ',          lat: 20.9688499, lng: 105.9188319, mapsUrl: 'https://maps.app.goo.gl/1qk3TPdjyD2BsmqJ7' },
+  { name: 'Nhà Vườn Nam Thu',        lat: 20.9687712, lng: 105.9186282, mapsUrl: 'https://maps.app.goo.gl/L781sKGn7oa2UoTZ8' },
+  { name: 'Nhà Vườn Duy Phượng',    lat: 20.9688223, lng: 105.9181214, mapsUrl: 'https://maps.app.goo.gl/4RnpZcpLTPxC3yon9' },
+  { name: 'Nhà Vườn Hưởng Hiền',    lat: 20.9688833, lng: 105.917546,  mapsUrl: 'https://maps.app.goo.gl/APxJBPVR6c4yHpUb6' },
+  { name: 'Nhà Vườn Lan Tươi',      lat: 20.9691996, lng: 105.9166577, mapsUrl: 'https://maps.app.goo.gl/RgrhwGQW3mikCcgu5' },
+  { name: 'Nhà Vườn Ánh Việt',      lat: 20.9689873, lng: 105.916877,  mapsUrl: 'https://maps.app.goo.gl/kz695zvCiYL7G3DB8' },
+  { name: 'Nhà Vườn Nhi Anh',       lat: 20.9690841, lng: 105.9176104, mapsUrl: 'https://maps.app.goo.gl/2a7riF44YFbUkemK8' },
+  { name: 'Nhà Vườn Tường Nhung',   lat: 20.9686326, lng: 105.9184002, mapsUrl: 'https://maps.app.goo.gl/t8NmMaH8rrJoapbbA' },
+  { name: 'Nhà Vườn Hoàng Kim',     lat: 20.968513,  lng: 105.917944,  mapsUrl: 'https://maps.app.goo.gl/taRLDmaJxPNsccCq8' },
+  { name: 'Nhà Vườn Tĩnh Thúy',     lat: 20.9686737, lng: 105.9166202, mapsUrl: 'https://maps.app.goo.gl/jrfmjXnXpS9Vsjso7' },
+  { name: 'Cây Cảnh Thanh Dương',   lat: 20.968473,  lng: 105.9167942, mapsUrl: 'https://maps.app.goo.gl/KSgzTJ8a7UM53PFi6' },
+  { name: 'Nhà Vườn Bảo Anh',       lat: 20.9679402, lng: 105.9179091, mapsUrl: 'https://maps.app.goo.gl/VKKMB4LeuDyL91nE6' },
+  { name: 'Vườn Lan Nông Nghiệp',   lat: 20.9678844, lng: 105.9172722, mapsUrl: 'https://maps.app.goo.gl/7HajZqQKAdYU2RYW6' },
+  { name: 'Nhà Vườn Lý Trường',     lat: 20.9675675, lng: 105.9163952, mapsUrl: 'https://maps.app.goo.gl/aZMUQmDjYKVFuQiX6' },
+  { name: 'Nhà Vườn Ly Phóng',      lat: 20.9672091, lng: 105.9166906, mapsUrl: 'https://maps.app.goo.gl/LibfY219B8LPrPgj8' },
+  { name: 'Nhà Vườn Uyên Quảng',   lat: 20.9565786, lng: 105.9151653, mapsUrl: 'https://maps.app.goo.gl/MhLA4FGXWns4YcU79' },
+  { name: 'Nhà Vườn Thủy Cam',      lat: 20.9566858, lng: 105.9160796, mapsUrl: 'https://maps.app.goo.gl/9twnKhotwqPVtsX2A' },
 ]
 
 export function LeafletMap({ gardens }: LeafletMapProps) {
