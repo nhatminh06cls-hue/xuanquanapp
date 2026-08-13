@@ -85,3 +85,22 @@ WHERE name ILIKE '%Phúc Diệp%';
 
 -- ── Kiểm tra kết quả ──
 SELECT name, lat, lng, phone FROM public.gardens WHERE lat IS NOT NULL ORDER BY name;
+
+-- ── Bước 3: Thêm 4 nhà vườn mới (Bích Trắc, Chiến Hoan, Dũng Bách, Sản Hòe) ──
+-- (chỉ chạy nếu chưa có trong DB)
+
+UPDATE public.gardens SET
+  lat = 20.9676943, lng = 105.916722
+WHERE name ILIKE '%Bích Trắc%';
+
+UPDATE public.gardens SET
+  lat = 20.9688225, lng = 105.9184685
+WHERE name ILIKE '%Chiến Hoan%' OR name ILIKE '%chien hoan%';
+
+UPDATE public.gardens SET
+  lat = 20.9695591, lng = 105.9166711
+WHERE name ILIKE '%Dũng Bách%' OR name ILIKE '%Dung Bach%';
+
+UPDATE public.gardens SET
+  lat = 20.969511, lng = 105.9176163
+WHERE name ILIKE '%Sản Hòe%' OR name ILIKE '%San Hoe%';
