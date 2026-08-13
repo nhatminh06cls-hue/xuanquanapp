@@ -27,18 +27,18 @@ export default async function MapPage() {
       {/* Embedded map */}
       <div className="w-full relative overflow-hidden">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3726.4!2d105.9175531!3d20.9689691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135a9b9c4f2e1c1%3A0x1234567890abcdef!2sXu%C3%A2n%20Quan%2C%20V%C4%83n%20Giang%2C%20H%C6%B0ng%20Y%C3%AAn!5e0!3m2!1svi!2svn!4v1723510000000"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3726.4!2d105.9175531!3d20.9689691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135af00718a3dbd%3A0xe35814b5eed85e42!2sXu%C3%A2n+quan!5e0!3m2!1svi!2svn!4v1723510000000"
           width="100%"
-          height="240"
+          height="260"
           style={{ border: 0, display: 'block' }}
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="Bản đồ Làng Hoa Xuân Quan"
+          title="Bản đồ Cổng Làng Hoa Xuân Quan"
         />
         {/* Nút chỉ đường */}
         <a
-          href="https://www.google.com/maps/dir/?api=1&destination=20.9689691,105.9200531&destination_place_id=Xu%C3%A2n+Quan+V%C4%83n+Giang+H%C6%B0ng+Y%C3%AAn"
+          href="https://maps.app.goo.gl/wSQALMvX67CmrbXN9"
           target="_blank"
           rel="noopener noreferrer"
           className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg flex items-center gap-1.5"
