@@ -24,24 +24,27 @@ export default async function MapPage() {
         <p className="text-xs text-textMuted mt-0.5">Làng hoa Xuân Quan · Văn Giang · Hưng Yên</p>
       </div>
 
-      {/* Embedded map (Google Maps iframe tĩnh) */}
-      <div className="w-full h-56 bg-surface-dark relative overflow-hidden">
+      {/* Embedded map */}
+      <div className="w-full relative overflow-hidden">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.8989!2d105.9311!3d20.9895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135a7d6f3c7c3cf%3A0x8b4f09e0f97b2a7f!2sXu%C3%A2n%20Quan%2C%20V%C4%83n%20Giang%2C%20H%C6%B0ng%20Y%C3%AAn!5e0!3m2!1svi!2svn!4v1700000000000"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3726.4!2d105.9175531!3d20.9689691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135a9b9c4f2e1c1%3A0x1234567890abcdef!2sXu%C3%A2n%20Quan%2C%20V%C4%83n%20Giang%2C%20H%C6%B0ng%20Y%C3%AAn!5e0!3m2!1svi!2svn!4v1723510000000"
           width="100%"
-          height="224"
-          style={{ border: 0 }}
+          height="240"
+          style={{ border: 0, display: 'block' }}
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           title="Bản đồ Làng Hoa Xuân Quan"
         />
-        {/* Overlay pin */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          <div className="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-lg">
-            📍 Làng Hoa Xuân Quan
-          </div>
-        </div>
+        {/* Nút chỉ đường */}
+        <a
+          href="https://www.google.com/maps/dir/?api=1&destination=20.9689691,105.9200531&destination_place_id=Xu%C3%A2n+Quan+V%C4%83n+Giang+H%C6%B0ng+Y%C3%AAn"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg flex items-center gap-1.5"
+        >
+          🧭 Chỉ đường
+        </a>
       </div>
 
       {/* Garden list */}
