@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { MapPin, Phone, Star, Clock } from 'lucide-react'
+import { MapPin, Phone, Star } from 'lucide-react'
 import Link from 'next/link'
+import { LeafletMap } from '@/components/shared/LeafletMap'
 
 export const metadata: Metadata = {
   title: 'Bản đồ Làng Hoa | Xuân Quan',
@@ -24,27 +25,31 @@ export default async function MapPage() {
         <p className="text-xs text-textMuted mt-0.5">Làng hoa Xuân Quan · Văn Giang · Hưng Yên</p>
       </div>
 
-      {/* Embedded map */}
-      <div className="w-full relative overflow-hidden">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3726.4!2d105.9175531!3d20.9689691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135af00718a3dbd%3A0xe35814b5eed85e42!2sXu%C3%A2n+quan!5e0!3m2!1svi!2svn!4v1723510000000"
-          width="100%"
-          height="260"
-          style={{ border: 0, display: 'block' }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Bản đồ Cổng Làng Hoa Xuân Quan"
-        />
-        {/* Nút chỉ đường */}
+      {/* Interactive Leaflet Map */}
+      <div className="relative">
+        <LeafletMap gardens={gardens ?? []} />
+        {/* Chỉ đường đến cổng làng */}
         <a
           href="https://maps.app.goo.gl/wSQALMvX67CmrbXN9"
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg flex items-center gap-1.5"
+          className="absolute bottom-3 right-3 bg-primary text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg flex items-center gap-1.5 z-[1000]"
         >
-          🧭 Chỉ đường
+          🧭 Chỉ đường đến cổng
         </a>
+      </div>
+
+      {/* Legend */}
+      <div className="px-4 py-3 bg-white border-b border-border flex items-center gap-4 text-xs text-textMuted">
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[10px]">📍</span>
+          <span>Cổng làng</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-5 bg-primary rounded-full flex items-center justify-center text-[10px]">🌸</span>
+          <span>Nhà vườn</span>
+        </div>
+        <span className="ml-auto text-[10px]">Nhấn pin để xem chi tiết</span>
       </div>
 
       {/* Garden list */}
@@ -55,20 +60,28 @@ export default async function MapPage() {
 
         {(gardens ?? []).map((garden: any) => (
           <div key={garden.id} className="bg-white rounded-2xl border border-surface-dark shadow-soft overflow-hidden">
-            {/* Garden banner */}
-            <div className="h-28 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative">
-              <span className="text-5xl">🌸</span>
-              {garden.is_open && (
-                <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  Đang mở
-                </div>
+            <div className="h-24 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative">
+              <span className="text-4xl">🌸</span>
+              <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                Đang mở
+              </div>
+              {/* GPS indicator */}
+              {garden.lat && garden.lng && (
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${garden.lat},${garden.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute bottom-2 right-2 bg-white/90 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full border border-primary/20 flex items-center gap-0.5"
+                >
+                  📍 Dẫn đường
+                </a>
               )}
             </div>
 
             <div className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-bold text-textMain">{garden.name}</h3>
-                {garden.rating && (
+                {garden.rating > 0 && (
                   <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
                     <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
                     <span className="text-xs font-bold text-yellow-700">{garden.rating}</span>
@@ -97,12 +110,16 @@ export default async function MapPage() {
               </div>
 
               <div className="flex gap-2">
-                <a href={`tel:${garden.phone}`}
-                  className="flex-1 border border-primary text-primary text-xs font-bold py-2 rounded-xl text-center hover:bg-primary/5 transition">
+                <a
+                  href={`tel:${garden.phone}`}
+                  className="flex-1 border border-primary text-primary text-xs font-bold py-2 rounded-xl text-center hover:bg-primary/5 transition"
+                >
                   📞 Gọi điện
                 </a>
-                <Link href={`/search?gardenId=${garden.id}&gardenName=${encodeURIComponent(garden.name)}`}
-                  className="flex-1 bg-primary text-white text-xs font-bold py-2 rounded-xl text-center hover:bg-primary/90 transition">
+                <Link
+                  href={`/search?gardenId=${garden.id}&gardenName=${encodeURIComponent(garden.name)}`}
+                  className="flex-1 bg-primary text-white text-xs font-bold py-2 rounded-xl text-center hover:bg-primary/90 transition"
+                >
                   🌸 Xem sản phẩm
                 </Link>
               </div>
