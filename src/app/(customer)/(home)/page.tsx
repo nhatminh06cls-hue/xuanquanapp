@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ShoppingBag, MapPin, ChevronRight, Leaf, Star, ArrowRight } from 'lucide-react'
+import { ShoppingBag, MapPin, ChevronRight, Star, ArrowRight } from 'lucide-react'
 import type { Metadata } from 'next'
 import { getAllGardens, getFeaturedProducts } from '@/lib/actions/products'
 import { Suspense } from 'react'
@@ -24,7 +24,7 @@ function HeroSection() {
       {/* Top bar */}
       <div className="relative z-10 flex items-center justify-between px-5 pt-14">
         <div className="flex items-center gap-2">
-          <Leaf className="w-4 h-4 text-white/80" />
+          <img src="/logo-xuanquan.png" alt="Xuân Quan" className="w-8 h-8 object-contain drop-shadow-md" />
           <span className="text-white/80 text-[11px] font-bold tracking-[0.2em] uppercase">Làng Hoa Xuân Quan</span>
         </div>
 

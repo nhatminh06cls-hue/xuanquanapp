@@ -222,3 +222,46 @@ export async function updateGardenInfo(formData: FormData) {
   return { success: true }
 }
 
+// ── Tạo nhà vườn mới ──────────────────────────────────────
+export async function createGarden(formData: FormData) {
+  const session = await getCurrentUser()
+  if (!session) return { error: 'Chưa đăng nhập' }
+
+  const name        = (formData.get('name') as string)?.trim()
+  const address     = (formData.get('address') as string)?.trim()
+  const phone       = (formData.get('phone') as string)?.trim()
+  const description = (formData.get('description') as string)?.trim()
+
+  if (!name || !address) return { error: 'Vui lòng nhập tên và địa chỉ vườn' }
+
+  const supabase = await createClient()
+
+  // Kiểm tra đã có vườn chưa
+  const { data: existing } = await supabase
+    .from('gardens').select('id').eq('owner_id', session.user.id).single()
+
+  if (existing) return { error: 'Bạn đã có nhà vườn rồi' }
+
+  const slug = name
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    + '-' + Date.now().toString(36)
+
+  const { error } = await (supabase as any).from('gardens').insert({
+    owner_id:    session.user.id,
+    name,
+    slug,
+    address:     address || 'Xuân Quan, Văn Giang, Hưng Yên',
+    phone:       phone   || null,
+    description: description || null,
+    is_open:     true,
+  })
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/profile')
+  revalidatePath('/')
+  return { success: true }
+}

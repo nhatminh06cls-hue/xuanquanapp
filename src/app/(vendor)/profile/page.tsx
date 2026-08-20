@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { getCurrentUser } from '@/lib/actions/auth'
 import { getMyGarden } from '@/lib/actions/vendor'
 import { GardenProfileEditor } from './GardenProfileEditor'
+import { CreateGardenForm } from './CreateGardenForm'
 
 export const metadata: Metadata = { title: 'Hồ sơ vườn | Xuân Quan Vendor' }
 
@@ -11,7 +12,11 @@ export default async function GardenProfilePage() {
   if (!session) redirect('/auth/login?redirectTo=/profile')
 
   const garden = await getMyGarden()
-  if (!garden) redirect('/products/new')
+
+  // Chưa có vườn → hiện form tạo vườn (không redirect sai)
+  if (!garden) {
+    return <CreateGardenForm />
+  }
 
   return (
     <div className="bg-surface min-h-screen pb-24">

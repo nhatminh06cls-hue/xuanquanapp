@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Leaf, UserPlus, LogIn } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, ArrowRight, UserPlus, LogIn } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -89,8 +89,12 @@ function LoginPageInner() {
       <div className="relative z-10 w-full max-w-sm animate-fade-in">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-primary text-white rounded-[28px] rotate-45 flex items-center justify-center shadow-lg shadow-primary/30">
-            <Leaf className="w-9 h-9 -rotate-45" />
+          <div className="w-32 h-32 flex items-center justify-center drop-shadow-xl">
+            <img
+              src="/logo-xuanquan.png"
+              alt="Làng Hoa Xuân Quan"
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
 

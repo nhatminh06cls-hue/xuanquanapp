@@ -40,7 +40,10 @@ export default function OrdersPage() {
   const [expanded, setExpanded]   = useState<string | null>(null)
 
   useEffect(() => {
-    getMyGarden().then(setGarden)
+    getMyGarden().then(g => {
+      setGarden(g)
+      if (!g) setLoading(false) // Không có vườn → dừng skeleton
+    })
   }, [])
 
   useEffect(() => {
@@ -90,6 +93,15 @@ export default function OrdersPage() {
               <div className="h-3 skeleton rounded w-1/2" />
             </div>
           ))
+        ) : !garden ? (
+          <div className="flex flex-col items-center py-20 text-center px-6">
+            <span className="text-5xl mb-4">🌱</span>
+            <p className="font-bold text-textMain mb-1">Bạn chưa có nhà vườn</p>
+            <p className="text-xs text-textMuted mb-5">Tạo trang nhà vườn để bắt đầu nhận đơn hàng</p>
+            <a href="/profile" className="bg-primary text-white font-bold px-6 py-3 rounded-xl text-sm">
+              Tạo nhà vườn ngay
+            </a>
+          </div>
         ) : orders.length === 0 ? (
           <div className="flex flex-col items-center py-16 text-center">
             <span className="text-4xl mb-3">📦</span>
