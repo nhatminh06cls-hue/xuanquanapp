@@ -89,8 +89,8 @@ export default function ReportsPage() {
       <div className="bg-white px-5 pt-14 pb-4 border-b border-border sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-textMain">Báo cáo thuế</h1>
-            <p className="text-xs text-textMuted mt-0.5">Doanh thu & đơn hàng để kê khai</p>
+            <h1 className="text-lg font-bold text-textMain">Báo cáo doanh thu</h1>
+            <p className="text-xs text-textMuted mt-0.5">Thống kê đơn hàng theo kỳ</p>
           </div>
           <Button variant="surface" size="sm" onClick={exportCSV} disabled={!report || loading}>
             <Download className="w-3.5 h-3.5" /> Xuất CSV
@@ -118,19 +118,21 @@ export default function ReportsPage() {
             ))}
           </div>
 
-          {/* Custom range */}
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
-              <label className="text-[11px] font-bold text-textMuted mb-1 block">Từ ngày</label>
-              <input type="date" value={from} onChange={e => { setFrom(e.target.value); setActivePreset(-1) }}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-textMain bg-white outline-none focus:border-primary transition" />
+          {/* Custom range — 2 rows on mobile */}
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[11px] font-bold text-textMuted mb-1 block">Từ ngày</label>
+                <input type="date" value={from} onChange={e => { setFrom(e.target.value); setActivePreset(-1) }}
+                  className="w-full border border-border rounded-xl px-3 py-2 text-sm text-textMain bg-white outline-none focus:border-primary transition" />
+              </div>
+              <div>
+                <label className="text-[11px] font-bold text-textMuted mb-1 block">Đến ngày</label>
+                <input type="date" value={to} onChange={e => { setTo(e.target.value); setActivePreset(-1) }}
+                  className="w-full border border-border rounded-xl px-3 py-2 text-sm text-textMain bg-white outline-none focus:border-primary transition" />
+              </div>
             </div>
-            <div className="flex-1">
-              <label className="text-[11px] font-bold text-textMuted mb-1 block">Đến ngày</label>
-              <input type="date" value={to} onChange={e => { setTo(e.target.value); setActivePreset(-1) }}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm text-textMain bg-white outline-none focus:border-primary transition" />
-            </div>
-            <Button size="sm" onClick={applyCustom} loading={loading}>Xem</Button>
+            <Button size="sm" onClick={applyCustom} loading={loading} className="w-full">Xem báo cáo</Button>
           </div>
         </div>
 
@@ -155,33 +157,6 @@ export default function ReportsPage() {
               ))}
             </div>
 
-            {/* Tax estimate box */}
-            <div className="bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/15 rounded-2xl p-4">
-              <h3 className="font-bold text-sm text-textMain mb-3 flex items-center gap-2">
-                📋 Ước tính thuế kê khai
-              </h3>
-              <div className="space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-textMuted">Doanh thu (Bán lẻ + Sỉ)</span>
-                  <span className="font-bold text-textMain">{formatPrice(report.totalRevenue)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-textMuted">Thuế GTGT 5% (hoa tươi)</span>
-                  <span className="font-bold text-orange-600">{formatPrice(Math.round(report.totalRevenue * 0.05))}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-textMuted">Thuế TNCN ước tính 1%</span>
-                  <span className="font-bold text-orange-600">{formatPrice(Math.round(report.totalRevenue * 0.01))}</span>
-                </div>
-                <div className="border-t border-primary/20 pt-2 flex justify-between">
-                  <span className="font-bold text-textMain">Tổng thuế ước tính</span>
-                  <span className="font-bold text-primary">{formatPrice(Math.round(report.totalRevenue * 0.06))}</span>
-                </div>
-              </div>
-              <p className="text-[10px] text-textMuted/70 mt-3">
-                * Đây là ước tính. Vui lòng tham khảo kế toán hoặc Chi cục Thuế địa phương để kê khai chính xác.
-              </p>
-            </div>
 
             {/* Orders table */}
             {report.orders?.length > 0 && (
