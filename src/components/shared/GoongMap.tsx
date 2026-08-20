@@ -131,23 +131,26 @@ export function GoongMap({ gardens, apiKey }: GoongMapProps) {
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
 
-    // Load Goong Map JS CSS
+    // Load Goong JS CSS (jsDelivr CDN chính thức)
     const link = document.createElement('link')
     link.rel = 'stylesheet'
-    link.href = 'https://cdn.goong.io/css/goong-map-js@1.0.9.min.css'
+    link.href = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css'
     document.head.appendChild(link)
 
-    // Load Goong Map JS
+    // Load Goong JS SDK
     const script = document.createElement('script')
-    script.src = 'https://cdn.goong.io/js/goong-map-js@1.0.9.min.js'
+    script.src = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js'
     script.onload = () => {
-      const GoongMap = (window as any).GoongMap
-      if (!mapRef.current || !GoongMap) return
+      const goongjs = (window as any).goongjs
+      if (!mapRef.current || !goongjs) return
+
+      // Set access token
+      goongjs.accessToken = apiKey
 
       // Khởi tạo bản đồ Goong (nền tảng VN, không có đường lưỡi bò)
-      const map = new GoongMap.Map({
+      const map = new goongjs.Map({
         container: mapRef.current,
-        style: `https://tiles.goong.io/assets/goong_map_web.json?api_key=${apiKey}`,
+        style: 'https://tiles.goong.io/assets/goong_map_web.json',
         center: [105.9170, 20.9680], // Xuân Quan
         zoom: 15,
       })
@@ -166,10 +169,10 @@ export function GoongMap({ gardens, apiKey }: GoongMapProps) {
           cursor:pointer;
         `
 
-        new GoongMap.Marker({ element: gateEl })
+        new goongjs.Marker({ element: gateEl })
           .setLngLat([105.9200531, 20.9689691])
           .setPopup(
-            new GoongMap.Popup({ offset: 18 }).setHTML(`
+            new goongjs.Popup({ offset: 18 }).setHTML(`
               <div style="text-align:center;min-width:160px">
                 <strong style="color:#e53935">📍 Cổng Làng Hoa Xuân Quan</strong><br/>
                 <small>Văn Giang, Hưng Yên</small><br/>
@@ -215,10 +218,10 @@ export function GoongMap({ gardens, apiKey }: GoongMapProps) {
             ? `<a href="/search?gardenId=${dbGarden.id}" style="color:#1B6B5A;font-weight:bold;font-size:12px">🌸 Xem SP</a>`
             : ''
 
-          new GoongMap.Marker({ element: el })
+          new goongjs.Marker({ element: el })
             .setLngLat([kg.lng, kg.lat])
             .setPopup(
-              new GoongMap.Popup({ offset: 16 }).setHTML(`
+              new goongjs.Popup({ offset: 16 }).setHTML(`
                 <div style="min-width:190px;line-height:1.7">
                   <strong style="color:#1B6B5A;font-size:13px">${kg.name}</strong>
                   ${rating}${phone}${mapsLink}
@@ -254,10 +257,10 @@ export function GoongMap({ gardens, apiKey }: GoongMapProps) {
             cursor:pointer;
           `
           const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${g.lat},${g.lng}`
-          new GoongMap.Marker({ element: el })
+          new goongjs.Marker({ element: el })
             .setLngLat([g.lng, g.lat])
             .setPopup(
-              new GoongMap.Popup({ offset: 16 }).setHTML(`
+              new goongjs.Popup({ offset: 16 }).setHTML(`
                 <div style="min-width:180px">
                   <strong style="color:#1B6B5A">${g.name}</strong>
                   ${g.phone ? `<br/><a href="tel:${g.phone}" style="color:#1B6B5A">📞 ${g.phone}</a>` : ''}
