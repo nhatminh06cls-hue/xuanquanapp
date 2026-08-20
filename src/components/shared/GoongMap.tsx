@@ -61,6 +61,73 @@ export function GoongMap({ gardens, apiKey }: GoongMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
 
+  // Fallback: nếu chưa có Goong API key, hiện danh sách nhà vườn
+  if (!apiKey) {
+    return (
+      <div style={{ background: '#f8f5f0' }}>
+        {/* Banner thông báo */}
+        <div style={{
+          background: 'linear-gradient(135deg, #1B6B5A, #2d9a7a)',
+          color: 'white', padding: '12px 16px',
+          display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px'
+        }}>
+          <span>🗺️</span>
+          <span>Bản đồ tương tác đang được kích hoạt — Xem danh sách nhà vườn bên dưới</span>
+        </div>
+
+        {/* Nút chỉ đường cổng làng */}
+        <div style={{ padding: '12px 16px', background: 'white', borderBottom: '1px solid #eee' }}>
+          <a
+            href="https://maps.app.goo.gl/wSQALMvX67CmrbXN9"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              background: '#e53935', color: 'white', padding: '8px 16px',
+              borderRadius: '20px', textDecoration: 'none', fontWeight: 'bold', fontSize: '13px'
+            }}
+          >
+            📍 Chỉ đường đến Cổng Làng Hoa Xuân Quan
+          </a>
+        </div>
+
+        {/* Danh sách nhà vườn */}
+        <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '420px', overflowY: 'auto' }}>
+          {KNOWN_GARDENS.map((kg, i) => {
+            const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${kg.lat},${kg.lng}`
+            return (
+              <div key={i} style={{
+                background: 'white', borderRadius: '12px', padding: '10px 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '18px' }}>🌸</span>
+                  <span style={{ fontWeight: '600', fontSize: '13px', color: '#1a1a1a' }}>{kg.name}</span>
+                </div>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  {kg.mapsUrl && (
+                    <a href={kg.mapsUrl} target="_blank" rel="noopener noreferrer"
+                      style={{ fontSize: '11px', color: '#888', textDecoration: 'none' }}>
+                      📌
+                    </a>
+                  )}
+                  <a href={directionsUrl} target="_blank" rel="noopener noreferrer"
+                    style={{
+                      background: '#1B6B5A', color: 'white', padding: '4px 10px',
+                      borderRadius: '8px', fontSize: '11px', fontWeight: 'bold', textDecoration: 'none'
+                    }}>
+                    🧭 Đường
+                  </a>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return
 
