@@ -11,6 +11,7 @@ export default function AccountPage() {
   const router = useRouter()
   const [user, setUser]       = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
+  const [garden, setGarden]   = useState<any>(null)
   const [orders, setOrders]   = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -20,12 +21,15 @@ export default function AccountPage() {
       if (!u) { setLoading(false); return }
       setUser(u)
 
-      const { data: p } = await (supabase as any).from('profiles').select('*').eq('id', u.id).single()
+      const [{ data: p }, { data: g }, { data: o }] = await Promise.all([
+        (supabase as any).from('profiles').select('*').eq('id', u.id).single(),
+        (supabase as any).from('gardens').select('id,name').eq('owner_id', u.id).maybeSingle(),
+        (supabase as any).from('orders')
+          .select('id, status, total_amount, created_at, order_items(id)')
+          .eq('customer_id', u.id).order('created_at', { ascending: false }).limit(5),
+      ])
       setProfile(p)
-
-      const { data: o } = await (supabase as any)
-        .from('orders').select('id, status, total_amount, created_at, order_items(id)')
-        .eq('customer_id', u.id).order('created_at', { ascending: false }).limit(5)
+      setGarden(g)
       setOrders(o ?? [])
       setLoading(false)
     })
@@ -77,7 +81,8 @@ export default function AccountPage() {
   }
 
   const displayName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'Người dùng'
-  const isVendor    = profile?.role === 'vendor'
+  // Vendor nếu có vườn hoặc role = vendor
+  const isVendor = !!garden || profile?.role === 'vendor'
 
   return (
     <div className="min-h-screen bg-surface pb-28">

@@ -253,6 +253,12 @@ export async function createGarden(formData: FormData) {
 
   if (error) return { error: error.message }
 
+  // Đánh dấu user là vendor trong profiles
+  await (supabase as any)
+    .from('profiles')
+    .update({ role: 'vendor' })
+    .eq('id', session.user.id)
+
   revalidatePath('/dashboard')
   revalidatePath('/profile')
   revalidatePath('/')

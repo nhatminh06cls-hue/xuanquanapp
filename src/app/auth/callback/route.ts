@@ -57,8 +57,21 @@ export async function GET(request: Request) {
     return NextResponse.redirect(errorUrl)
   }
 
+  // Smart redirect: nếu không có next cụ thể, kiểm tra xem user có vườn không
+  let finalDestination = next
+  if (next === '/') {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: garden } = await supabase
+        .from('gardens').select('id').eq('owner_id', user.id).maybeSingle()
+      if (garden) finalDestination = '/dashboard'
+    }
+  }
+
+  const finalUrl = new URL(finalDestination, requestUrl.origin)
+
   // Tạo redirect và copy cookies vào response — bắt buộc cho Safari
-  const response = NextResponse.redirect(redirectUrl)
+  const response = NextResponse.redirect(finalUrl)
   cookieStore.getAll().forEach(({ name, value }) => {
     response.cookies.set(name, value, {
       sameSite: 'lax',

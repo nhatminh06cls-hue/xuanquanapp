@@ -41,7 +41,7 @@ function LoginPageInner() {
     const supabase = createClient()
 
     if (mode === 'login') {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+      const { error: err, data: loginData } = await supabase.auth.signInWithPassword({ email, password })
       setIsLoading(false)
       if (err) {
         if (err.message.includes('Invalid login credentials')) {
@@ -53,7 +53,15 @@ function LoginPageInner() {
         }
         return
       }
-      router.push(destination)
+
+      // Smart redirect: nếu không có đích cụ thể, kiểm tra có vườn không
+      let target = destination
+      if (!isVendorMode && destination === '/') {
+        const { data: garden } = await supabase
+          .from('gardens').select('id').eq('owner_id', loginData.user?.id ?? '').maybeSingle()
+        if (garden) target = '/dashboard'
+      }
+      router.push(target)
       router.refresh()
     } else {
       // Register
