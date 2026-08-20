@@ -242,16 +242,9 @@ export async function createGarden(formData: FormData) {
 
   if (existing) return { error: 'Bạn đã có nhà vườn rồi' }
 
-  const slug = name
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-    + '-' + Date.now().toString(36)
-
   const { error } = await (supabase as any).from('gardens').insert({
     owner_id:    session.user.id,
     name,
-    slug,
     address:     address || 'Xuân Quan, Văn Giang, Hưng Yên',
     phone:       phone   || null,
     description: description || null,
