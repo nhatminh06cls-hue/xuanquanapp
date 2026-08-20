@@ -13,8 +13,11 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const redirectTo = requestUrl.searchParams.get('redirectTo') ?? '/'
-  const redirectUrl = new URL(redirectTo, requestUrl.origin)
+  // Hỗ trợ cả 'next' (từ Google OAuth) và 'redirectTo' (từ email login)
+  const next = requestUrl.searchParams.get('next')
+    ?? requestUrl.searchParams.get('redirectTo')
+    ?? '/'
+  const redirectUrl = new URL(next, requestUrl.origin)
 
   if (!code) {
     return NextResponse.redirect(redirectUrl)

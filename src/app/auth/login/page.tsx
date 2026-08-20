@@ -13,6 +13,7 @@ function LoginPageInner() {
   const redirectTo = params.get('redirectTo') ?? '/'
 
   const [mode, setMode]         = useState<'login' | 'register'>('login')
+  const [isVendorMode, setIsVendorMode] = useState(false)
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
@@ -20,6 +21,9 @@ function LoginPageInner() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError]       = useState('')
   const [success, setSuccess]   = useState('')
+
+  // Điểm đến sau login: vendor → /profile, người dùng → redirectTo từ URL
+  const destination = isVendorMode ? '/profile' : redirectTo
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) {
@@ -49,7 +53,7 @@ function LoginPageInner() {
         }
         return
       }
-      router.push(redirectTo)
+      router.push(destination)
       router.refresh()
     } else {
       // Register
@@ -64,15 +68,24 @@ function LoginPageInner() {
       })
       setIsLoading(false)
       if (err) { setError(err.message); return }
-      setSuccess('✅ Đăng ký thành công! Kiểm tra email để xác nhận tài khoản.')
+      if (isVendorMode) {
+        // Vendor: đăng nhập luôn sau khi đăng ký và chuyển đến tạo vườn
+        await supabase.auth.signInWithPassword({ email, password })
+        router.push('/profile')
+        router.refresh()
+      } else {
+        setSuccess('✅ Đăng ký thành công! Kiểm tra email để xác nhận tài khoản.')
+      }
     }
   }
 
   async function handleGoogleLogin() {
     const supabase = createClient()
+    // Truyền next= vào callback để redirect đúng sau login Google
+    const callbackUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(destination)}`
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl },
     })
   }
 
@@ -99,10 +112,12 @@ function LoginPageInner() {
         </div>
 
         <h1 className="text-2xl font-serif font-bold text-textMain text-center mb-1">
-          {mode === 'login' ? 'Chào mừng trở lại' : 'Tạo tài khoản mới'}
+          {isVendorMode ? '🌸 Đăng ký nhà vườn' : mode === 'login' ? 'Chào mừng trở lại' : 'Tạo tài khoản mới'}
         </h1>
         <p className="text-sm text-textMuted text-center mb-6">
-          {mode === 'login'
+          {isVendorMode
+            ? 'Tạo tài khoản để bắt đầu bán hoa trên Xuân Quan'
+            : mode === 'login'
             ? 'Đăng nhập để mua sắm và theo dõi đơn hàng'
             : 'Gia nhập cộng đồng Làng Hoa Xuân Quan'}
         </p>
@@ -202,10 +217,27 @@ function LoginPageInner() {
 
         {/* Vendor link */}
         <p className="text-center text-[11px] text-textMuted mt-6">
-          Là nhà vườn?{' '}
-          <a href="#" className="font-bold text-primary underline underline-offset-4">
-            Đăng ký tài khoản nhà vườn
-          </a>
+          {isVendorMode ? (
+            <>
+              Là khách mua hàng?{' '}
+              <button
+                onClick={() => { setIsVendorMode(false); setMode('login'); setError(''); setSuccess('') }}
+                className="font-bold text-primary underline underline-offset-4"
+              >
+                Đăng nhập tài khoản
+              </button>
+            </>
+          ) : (
+            <>
+              Là nhà vườn?{' '}
+              <button
+                onClick={() => { setIsVendorMode(true); setMode('register'); setError(''); setSuccess('') }}
+                className="font-bold text-primary underline underline-offset-4"
+              >
+                Đăng ký tài khoản nhà vườn
+              </button>
+            </>
+          )}
         </p>
       </div>
     </div>
