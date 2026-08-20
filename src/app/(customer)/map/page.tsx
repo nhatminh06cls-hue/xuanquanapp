@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { MapPin, Phone, Star } from 'lucide-react'
 import Link from 'next/link'
-import { LeafletMap } from '@/components/shared/LeafletMap'
+import { GoongMap } from '@/components/shared/GoongMap'
 
 export const metadata: Metadata = {
   title: 'Bản đồ Làng Hoa | Xuân Quan',
   description: 'Khám phá các nhà vườn tại làng hoa Xuân Quan, Văn Giang, Hưng Yên.',
 }
+
+const GOONG_API_KEY = process.env.NEXT_PUBLIC_GOONG_MAP_KEY ?? ''
 
 export default async function MapPage() {
   const supabase = await createClient()
@@ -25,10 +27,9 @@ export default async function MapPage() {
         <p className="text-xs text-textMuted mt-0.5">Làng hoa Xuân Quan · Văn Giang · Hưng Yên</p>
       </div>
 
-      {/* Interactive Leaflet Map */}
+      {/* Bản đồ Goong (nền tảng VN, tuân thủ pháp luật) */}
       <div className="relative">
-        <LeafletMap gardens={gardens ?? []} />
-        {/* Chỉ đường đến cổng làng */}
+        <GoongMap gardens={gardens ?? []} apiKey={GOONG_API_KEY} />
         <a
           href="https://maps.app.goo.gl/wSQALMvX67CmrbXN9"
           target="_blank"
