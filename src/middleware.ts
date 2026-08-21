@@ -39,13 +39,6 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const role = request.cookies.get('xq_role')?.value  // 'vendor' | 'customer' | undefined
 
-  // ── Trang chủ → Vendor tự động vào dashboard ─────────────────
-  if (pathname === '/') {
-    if (user && role === 'vendor') {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-  }
-
   // ── Vendor routes: phải đăng nhập ────────────────────────────
   const VENDOR_ROOTS = ['/dashboard', '/orders', '/inventory', '/reports', '/profile', '/products', '/deals']
   const isVendorRoute = VENDOR_ROOTS.some(
