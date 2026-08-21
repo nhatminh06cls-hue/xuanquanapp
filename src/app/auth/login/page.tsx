@@ -54,13 +54,18 @@ function LoginPageInner() {
         return
       }
 
-      // Smart redirect: nếu không có đích cụ thể, kiểm tra có vườn không
+      // Smart redirect + set role cookie
       let target = destination
+      let role = 'customer'
       if (!isVendorMode && destination === '/') {
         const { data: garden } = await supabase
           .from('gardens').select('id').eq('owner_id', loginData.user?.id ?? '').maybeSingle()
-        if (garden) target = '/dashboard'
+        if (garden) { target = '/dashboard'; role = 'vendor' }
+      } else if (isVendorMode) {
+        role = 'vendor'
       }
+      // Set cookie để middleware nhận ra role
+      document.cookie = `xq_role=${role};path=/;max-age=${60*60*24*365};samesite=lax`
       router.push(target)
       router.refresh()
     } else {
@@ -79,6 +84,8 @@ function LoginPageInner() {
       if (isVendorMode) {
         // Vendor: đăng nhập luôn sau khi đăng ký và chuyển đến tạo vườn
         await supabase.auth.signInWithPassword({ email, password })
+        // Cookie sẽ được set đúng sau khi tạo vườn xong
+        document.cookie = `xq_role=vendor;path=/;max-age=${60*60*24*365};samesite=lax`
         router.push('/profile')
         router.refresh()
       } else {

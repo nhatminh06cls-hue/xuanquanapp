@@ -38,6 +38,8 @@ export default function AccountPage() {
   async function handleLogout() {
     const supabase = createClient()
     await supabase.auth.signOut()
+    // Xóa role cookie
+    document.cookie = 'xq_role=;path=/;max-age=0'
     router.push('/')
     router.refresh()
   }

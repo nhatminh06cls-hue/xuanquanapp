@@ -59,12 +59,13 @@ export async function GET(request: Request) {
 
   // Smart redirect: nếu không có next cụ thể, kiểm tra xem user có vườn không
   let finalDestination = next
-  if (next === '/') {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-      const { data: garden } = await supabase
-        .from('gardens').select('id').eq('owner_id', user.id).maybeSingle()
-      if (garden) finalDestination = '/dashboard'
+  let role = 'customer'
+  if (user) {
+    const { data: garden } = await supabase
+      .from('gardens').select('id').eq('owner_id', user.id).maybeSingle()
+    if (garden) {
+      role = 'vendor'
+      if (next === '/') finalDestination = '/dashboard'
     }
   }
 
@@ -79,6 +80,15 @@ export async function GET(request: Request) {
       httpOnly: true,
       path: '/',
     })
+  })
+
+  // Set xq_role cookie để middleware đọc (không httpOnly)
+  response.cookies.set('xq_role', role, {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: false,
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365, // 1 năm
   })
 
   return response
