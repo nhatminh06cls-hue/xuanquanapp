@@ -33,11 +33,13 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session — QUAN TRỌNG: không xóa dòng này
-  const { data: { user } } = await supabase.auth.getUser()
+  // Đọc session từ cookie — không cần network call (getUser() thì có)
+  // Đủ để routing, còn data access dùng getUser() trong server components/actions
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   const { pathname } = request.nextUrl
-  const role = request.cookies.get('xq_role')?.value  // 'vendor' | 'customer' | undefined
+  const role = request.cookies.get('xq_role')?.value
 
   // ── Vendor routes: phải đăng nhập ────────────────────────────
   const VENDOR_ROOTS = ['/dashboard', '/orders', '/inventory', '/reports', '/profile', '/products', '/deals']

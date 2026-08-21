@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ClipboardList, BarChart3, PlusCircle, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, ClipboardList, PlusCircle, ShoppingBag, User } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
 const vendorNavItems = [
@@ -10,7 +10,7 @@ const vendorNavItems = [
   { href: '/products',     icon: ShoppingBag,     label: 'Sản phẩm' },
   { href: '/products/new', icon: PlusCircle,      label: 'Thêm mới', isNew: true },
   { href: '/orders',       icon: ClipboardList,   label: 'Đơn hàng', hasBadge: true },
-  { href: '/reports',      icon: BarChart3,        label: 'Báo cáo' },
+  { href: '/account',      icon: User,            label: 'Tài khoản' },
 ]
 
 export function VendorBottomNav({ pendingOrderCount = 0 }: { pendingOrderCount?: number }) {
