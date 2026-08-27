@@ -1,14 +1,13 @@
 // Service Worker cho Làng Hoa Xuân Quan PWA
-const CACHE_NAME = 'xuanquan-v1'
+const CACHE_NAME = 'xuanquan-v3'
 
-// Các tài nguyên tĩnh được cache khi cài đặt
+// Chỉ cache assets tĩnh thực sự (không phải HTML routes)
 const STATIC_ASSETS = [
-  '/',
-  '/shop',
   '/manifest.json',
   '/hero-village.jpg',
   '/icon-192x192.png',
   '/icon-512x512.png',
+  '/logo-xuanquan.png',
 ]
 
 // ── Install: cache static assets ──────────────────────────────
@@ -37,7 +36,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
-// ── Fetch: Network first, fallback to cache ───────────────────
+// ── Fetch ─────────────────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
   const { request } = event
   const url = new URL(request.url)
@@ -45,26 +44,26 @@ self.addEventListener('fetch', (event) => {
   // Chỉ xử lý request cùng origin
   if (url.origin !== location.origin) return
 
-  // API calls → network only, không cache
-  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/')) {
-    return
-  }
-
-  // Navigation requests → Network first, fallback cache
+  // ── Navigation (click link, browser back/forward) ──────────
+  // KHÔNG cache HTML routes — để Next.js và middleware xử lý đúng
+  // Cũ: fallback về '/' gây lỗi khi navigate từ / sang /account
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
-          return response
-        })
-        .catch(() => caches.match('/') )
+      fetch(request).catch(() => {
+        // Offline fallback: thử match chính xác URL đó (nếu đã cache)
+        // KHÔNG fallback về '/' vì sẽ trả về trang chủ cho mọi route
+        return caches.match(request)
+      })
     )
     return
   }
 
-  // Static assets → Cache first, fallback network
+  // ── Next.js internal requests → network only ───────────────
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/_next/')) {
+    return
+  }
+
+  // ── Static assets → Cache first, fallback network ──────────
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached
